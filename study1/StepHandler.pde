@@ -13,19 +13,21 @@ class StepHandler {
   int[] adjustV = new int[]{1, 5};
   Button[] btns = new Button[4];
   
-  int[] recordI = new int[]{0, 0, 50};
+  int[] recordI = new int[]{0, 0, 0};
+  int[] recordIsum = new int[]{0, 0, 0};
   int[] testV = new int[6];
   int step4T = 0;
+  int stepCount = 0;
 
   StepHandler(ControlP5 _cp5, int _step) {
     cp5 = _cp5;
     step = _step;
     
     initStep(true);
-    cp5.addButton("OK")
-        .setValue(0)
-        .setPosition(width-70, height-70)
-        .setSize(50,50);
+    //cp5.addButton("OK")
+    //    .setValue(0)
+    //    .setPosition(width-70, height-70)
+    //    .setSize(50,50);
   }  
   
   void draw() {
@@ -54,13 +56,22 @@ class StepHandler {
       //EMS go
       return;
     }  
+    
     recordI[step-1] = emsController.intensity;
     if (step == 2) recordI[step-1] -= 1;
     else recordI[step-1] += 1;
-    if (step == 3) removeControlBtn();
+    
+    recordIsum[step-1] += recordI[step-1];
+    if (step == 3) {
+      stepCount ++;
+      if (stepCount >= STEP_REPEAT) {
+        removeControlBtn();
+      }
+
+      else step = 0;
+    }
     step ++;
     initStep(false);
-    println("recordI: "+recordI[step-2]);
   }
   
   void initStep(boolean first) {
@@ -81,8 +92,8 @@ class StepHandler {
   }
 
   void genTestV() {
-    float minI = (recordI[0]+recordI[1])/2.0;
-    float maxI = recordI[2];
+    float minI = (recordIsum[0]/STEP_REPEAT+recordIsum[1]/STEP_REPEAT)/2.0;
+    float maxI = recordIsum[2]/STEP_REPEAT;
     testV[0] = (int)minI+2;
     testV[4] = (int)maxI-2;
     float interval = (maxI-minI-4)/4;

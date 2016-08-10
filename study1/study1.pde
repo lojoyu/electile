@@ -5,7 +5,7 @@ import controlP5.*;
 ControlP5 cp5;
 
 Serial openEMSstim;
-int index_of_serial_port = 17;
+int index_of_serial_port = 0;
 EmsController emsController;
 
 boolean noEMS = true;
@@ -13,9 +13,11 @@ StepHandler stepHandler;
 
 void setup() {
   
-  //printArray(Serial.list());
-  //openEMSstim = new Serial(this, Serial.list()[index_of_serial_port], 9600);
+  printArray(Serial.list());
+  openEMSstim = new Serial(this, Serial.list()[index_of_serial_port], 9600);
   emsController = new EmsController(openEMSstim);
+  
+ // delay(10000);
   
   size(600, 400);
   fill(200);
@@ -57,6 +59,10 @@ void keyPressed() {
     sendVal(+1);  
   }
   
+  if (key == 't' || key =='T') {
+    this.openEMSstim.write("C0I100T20000G");
+  }
+  
 }
 
 void controlEvent(ControlEvent theEvent) {
@@ -73,4 +79,3 @@ void sendVal(int val) {
   emsController.plusIntensity(val);
   emsController.go();
 }
-

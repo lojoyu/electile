@@ -1,7 +1,7 @@
 class EmsController {
   int channel = 0;
   int intensity = 0;
-  int time = 0;
+  int time = 200;
   Serial openEMSstim;
   
   EmsController(Serial _openEMSstim) {
